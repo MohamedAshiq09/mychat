@@ -1,6 +1,7 @@
 // pages/index.tsx
 import { useState, useEffect } from "react";
-import useSocket from "../hooks/useSocket";
+import useSocket from "../hook/useSocket";
+
 
 interface Message {
   user: string;
