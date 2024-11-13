@@ -1,23 +1,72 @@
-// hooks/useSocket.ts
-import { useEffect, useState } from "react";
-import io, { Socket } from "socket.io-client";
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 
-let socket: Socket;
+interface UseSocketReturn {
+  socket: Socket | null;
+  isConnected: boolean;
+  error: Error | null;
+}
 
-const useSocket = () => {
-  const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
+interface UseSocketOptions {
+  url?: string;
+  options?: {
+    reconnection?: boolean;
+    reconnectionAttempts?: number;
+    timeout?: number;
+    [key: string]: any;
+  };
+}
+
+const useSocket = (
+  { url = process.env.NEXT_PUBLIC_SOCKET_URL || '', options = {} }: UseSocketOptions = {}
+): UseSocketReturn => {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Connect to the server
-    socket = io();
-    setSocketInstance(socket);
+    let socketInstance: Socket;
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+    try {
+      socketInstance = io(url, {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        timeout: 10000,
+        ...options,
+      });
 
-  return socketInstance;
+      socketInstance.on('connect', () => {
+        setIsConnected(true);
+        setError(null);
+      });
+
+      socketInstance.on('disconnect', () => {
+        setIsConnected(false);
+      });
+
+      socketInstance.on('connect_error', (err) => {
+        setError(err instanceof Error ? err : new Error('Connection error'));
+        setIsConnected(false);
+      });
+
+      setSocket(socketInstance);
+
+      return () => {
+        if (socketInstance) {
+          socketInstance.removeAllListeners();
+          socketInstance.close();
+          setSocket(null);
+          setIsConnected(false);
+          setError(null);
+        }
+      };
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to create socket connection'));
+      return () => {}; // Empty cleanup if socket creation fails
+    }
+  }, [url, JSON.stringify(options)]);
+
+  return { socket, isConnected, error };
 };
 
 export default useSocket;
