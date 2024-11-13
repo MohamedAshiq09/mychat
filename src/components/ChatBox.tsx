@@ -1,26 +1,43 @@
-// src/components/SocketComponent.tsx
-import React, { useEffect } from 'react';
-import { useSocket } from 'some-socket-library'; // Adjust with the actual socket library you're using
+// src/hooks/useSocket.ts
+import { useEffect, useState } from 'react';
+import io, { Socket } from "socket.io-client";
 
-const SocketComponent = () => {
-  const { socket, isConnected, error } = useSocket({
-    url: 'your-socket-url'
-  });
+interface UseSocketReturn {
+  socket: typeof Socket | null;
+  isConnected: boolean;
+  error: Error | null;
+}
+
+const useSocket = (url: string): UseSocketReturn => {
+  const [socket, setSocket] = useState<typeof Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('message', (data) => {
-        console.log(data);
-      });
-    }
-  }, [socket]);
+    // Initialize the socket connection
+    const socketInstance = io(url);
+    setSocket(socketInstance);
 
-  return (
-    <div>
-      <p>Connection status: {isConnected ? 'Connected' : 'Disconnected'}</p>
-      {error && <p>Error: {error.message}</p>}
-    </div>
-  );
+    // Set up event listeners
+    socketInstance.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socketInstance.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socketInstance.on('connect_error', (err: Error) => {
+      setError(err);
+    });
+
+    // Clean up the socket connection on unmount
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [url]);
+
+  return { socket, isConnected, error };
 };
 
-export default SocketComponent;
+export default useSocket;
