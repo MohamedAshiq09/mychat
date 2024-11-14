@@ -8,11 +8,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/socket.io-client": "^1.4.36",
     "autoprefixer": "^10.4.20",
     "next": "^15.0.3",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },

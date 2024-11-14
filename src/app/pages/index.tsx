@@ -1,10 +1,7 @@
-// pages/index.tsx
 import { useState, useEffect } from "react";
 import useSocket from "@/hooks/usesocket";
-import MessageList from "@/components/MessageList";
-import ChatInput from "@/components/ChatInput";
+import DesignChat from "@/components/DesignChat";
 import { GetServerSideProps } from "next";
-
 
 interface Data {
   name: string;
@@ -21,19 +18,17 @@ interface HomeProps {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  
-  const res = await fetch('https://api.example.com/data');
+  const res = await fetch("https://api.example.com/data");
   const data = await res.json();
 
-  
   return {
     props: { data },
   };
 };
 
 const Home: React.FC<HomeProps> = ({ data }) => {
-  const socket = useSocket("http://localhost:3000"); 
-  
+  const socket = useSocket("http://localhost:3000");
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -66,17 +61,18 @@ const Home: React.FC<HomeProps> = ({ data }) => {
       <h2>Data from server:</h2>
       <pre>{JSON.stringify(data, null, 2)}</pre>
 
+      {/* Check if the user has set a username */}
       {username ? (
-        <>
-          <MessageList messages={messages} />
-          <ChatInput
-            message={message}
+        <div>
+          <DesignChat
+            messages={messages}
+            sendMessage={sendMessage}
             setMessage={setMessage}
-            onSendMessage={sendMessage}
+            message={message}
           />
-        </>
+        </div>
       ) : (
-        <>
+        <div>
           <input
             type="text"
             placeholder="Enter your name"
@@ -84,7 +80,7 @@ const Home: React.FC<HomeProps> = ({ data }) => {
             style={{ marginRight: "10px" }}
           />
           <button onClick={() => setUsername(username)}>Join Chat</button>
-        </>
+        </div>
       )}
     </div>
   );
