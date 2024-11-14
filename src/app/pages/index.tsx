@@ -72,6 +72,7 @@
 //     </div>
 //   );
 // }
+// pages/index.tsx
 import { useState, useEffect } from "react";
 import useSocket from "@/hooks/usesocket";
 import MessageList from "@/components/MessageList";
@@ -83,7 +84,7 @@ interface Message {
 }
 
 export default function Home() {
-  const socket = useSocket();
+  const socket = useSocket("http://localhost:3000"); // Pass the server URL here
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
   const [username, setUsername] = useState<string>("");
