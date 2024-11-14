@@ -1,4 +1,3 @@
-// src/pages/_error.js
 import React from 'react';
 
 const ErrorPage = ({ statusCode }) => {

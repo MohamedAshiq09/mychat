@@ -1,4 +1,3 @@
-// server.js
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const next = require("next");

@@ -23,13 +23,13 @@
 
 // export default useSocket;
 import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client"; // Ensure you're importing both io and Socket here
+import { io, Socket } from "socket.io-client"; 
 
 const useSocket = (url: string): Socket | null => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const socketInstance = io(url); // Create a socket instance with io
+    const socketInstance = io(url); 
     setSocket(socketInstance);
 
     return () => {
